@@ -2,7 +2,9 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var bodyParser = require('body-parser');
-
+var mkdirp = require('mkdirp');
+var fs = require('fs');
+var exec = require('exec');
 
 app.use('/static', express.static('public'));
 server.listen(3030);
@@ -14,10 +16,8 @@ app.get('/', function(req,res) {
 
 
 app.post('/pullGitRep', function(req,res) {
-  //console.log(req);
   var gitURI = req.body.gitURI;
   var gitType = req.body.gitType;
-  console.log(gitURI + ' :' + gitType);
   pullGitRep(gitURI, gitType, "master", "/path/to/matlab/dir");
 });
 
@@ -41,6 +41,23 @@ exports.pullGitRep = function(URI, type, branch, path){
   if (branch == undefined) {
     var branch = "master";
   }
+  //create directory for repositories
+  mkdirp("../sharelab_reps", function(err){
+     console.log("unable to create main dir" + ' error :' + err);
+  });
+  var pullShell = fs.createReadStream("./pull.sh");
+  var scriptPath = "../sharelab_reps/" + gitURI.replace("/", "-") + "/pull.sh";
+  var repoShell = fs.createWriteStream(scriptPath);
+  pullShell.pipe(repoShell);
+  pullShell.on('end', function(){
+    exec([scriptPath, scriptPath, URI, branch], function(err, out, code) {
+      if (err instanceof Error)
+        throw err;
+      process.stderr.write(err);
+      process.stdout.write(out);
+      process.exit(code);
+    });
+  });
   return true;
 };
 
