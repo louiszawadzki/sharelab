@@ -14,19 +14,25 @@
             <br/>
             <div class="row">
                 <div class="col-md-6" id="folder">
-                    Files
+                    <h4>Files</h4>
+                    <form action="/download" method="post" id="download">
+                        <input type="checkbox" name="files[]" value="ab.mat">ab.mat</input>
+                        <input type="checkbox" name="files[]" value="cd.mat">cd.mat</input>
+                        <button type="submit" name="submit" class="btn btn-default">Download</button>
+                    </form>
                 </div>
-                <div class="col-md-6" id="file">
+                <div class="col-md-6" id="actions">
+                    <h4>Actions</h4>
                     <form action="/pullGitRep" method="post" id="pullGitRep">
                         <input type="radio" name="gitType" value="https" id"https"></input>
                         <input type="radio" name="gitType" value="ssh" id"ssh"></input>
                         <input type="text" name="gitURI" id="gitURI"></input>
-                        <button type="submit" class="btn btn-submit" name="submit">Submit</button>
+                        <button type="submit" class="btn btn-submit" name="submit">Pull Git Repository</button>
                     </form>
                     <form action="/executeScripts" method="post" id="executeScripts">
-                        <checkbox>toto</checkbox>
-                        <checkbox>tot</checkbox>
-                        <button type="submit" class="btn btn-submit" name="submit">Submit</button>
+                        <input type="checkbox" name="files[]" value="toto">toto</input>
+                        <input type="checkbox" name="files[]" value="tot">tot</input>
+                        <button type="submit" class="btn btn-submit" name="submit">Execute Scripts</button>
                     </form>
                 </div>
             </div>

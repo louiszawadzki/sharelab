@@ -1,0 +1,16 @@
+{
+  "name": "sharelab",
+  "version": "0.0.0",
+  "description": "Collaborative Matlab files edition + Matlab run and commands",
+  "main": "app.js",
+  "scripts": {
+    "test": "./node_modules/.bin/mocha --reporter spec"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chai": "^3.4.1",
+    "mocha": "^2.3.4",
+    "request": "^2.67.0"
+  }
+}
