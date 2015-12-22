@@ -2,7 +2,6 @@
 <html>
     <head>
         <title>ShareLab</title>
-        <script src="static/socket.io.js"></script>
         <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
@@ -11,17 +10,26 @@
     <body>
         <div class="container">
             <h1>ShareLab</h1>
-            <h3>Collaborative Matlab</h3>
+            <h3>Matlab Server</h3>
             <br/>
             <div class="row">
-                <div class="col-md-3" id="folder">
+                <div class="col-md-6" id="folder">
                     Files
                 </div>
-                <div class="col-md-9" id="file">
-                    <textarea id="fileText"></textarea>
+                <div class="col-md-6" id="file">
+                    <form action="/pullGitRep" method="post" id="pullGitRep">
+                        <input type="radio" name="gitType" value="https" id"https"></input>
+                        <input type="radio" name="gitType" value="ssh" id"ssh"></input>
+                        <input type="text" name="gitURI" id="gitURI"></input>
+                        <button type="submit" class="btn btn-submit" name="submit">Submit</button>
+                    </form>
+                    <form action="/executeScripts" method="post" id="executeScripts">
+                        <checkbox>toto</checkbox>
+                        <checkbox>tot</checkbox>
+                        <button type="submit" class="btn btn-submit" name="submit">Submit</button>
+                    </form>
                 </div>
             </div>
         </div>
-        <script src="static/index.js"></script>
     </body>
 </html>
