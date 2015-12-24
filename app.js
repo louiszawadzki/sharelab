@@ -4,7 +4,7 @@ var server = require('http').createServer(app);
 var bodyParser = require('body-parser');
 var mkdirp = require('mkdirp');
 var fs = require('fs');
-var exec = require('exec');
+var child_process = require('child_process');
 
 app.use('/static', express.static('public'));
 server.listen(3030);
@@ -45,21 +45,39 @@ exports.pullGitRep = function(URI, type, branch, path){
   mkdirp("../sharelab_reps", function(err){
      console.log("unable to create main dir" + ' error :' + err);
   });
+
+  //copying the shell file
   var pullShell = fs.createReadStream("./pull.sh");
-  var scriptPath = "../sharelab_reps/" + gitURI.replace("/", "-") + "/pull.sh";
+  var repoPath = "../sharelab_reps/" + URI.replace("/", "-");
+  var scriptPath = repoPath + "/pull.sh";
   var repoShell = fs.createWriteStream(scriptPath);
   pullShell.pipe(repoShell);
+
+  //when the copy is done, the shell is executed
   pullShell.on('end', function(){
-    exec([scriptPath, scriptPath, URI, branch], function(err, out, code) {
+    child_process.execFile([scriptPath, repoPath, URI, branch], function(err, out, code) {
+      if (err instanceof Error)
+        throw err;
+      process.stderr.write(err);
+      console.log('ou ' + out);
+      console.log('er ' + err)
+      process.stdout.write(out);
+      process.exit(code);
+    });
+  });
+
+  return true;
+};
+
+exports.listMFiles = function(path) {
+        child_process.execFile([scriptPath, URI, branch], function(err, out, code) {
       if (err instanceof Error)
         throw err;
       process.stderr.write(err);
       process.stdout.write(out);
       process.exit(code);
     });
-  });
-  return true;
-};
+}
 
 exports.executeScripts = function(files, path){
   console.log("executeScripts");
