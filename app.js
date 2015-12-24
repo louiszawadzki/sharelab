@@ -36,7 +36,7 @@ app.post('download', function(req,res) {
   };*/
 });
 
-exports.pullGitRep = function(URI, type, branch, path){
+exports.pullGitRep = function(URI, type, branch){
   console.log("pullGitRep");
   if (branch == undefined) {
     var branch = "master";
@@ -46,37 +46,35 @@ exports.pullGitRep = function(URI, type, branch, path){
      console.log("unable to create main dir" + ' error :' + err);
   });
 
-  //copying the shell file
-  var pullShell = fs.createReadStream("./pull.sh");
+  //execute the shell file
   var repoPath = "../sharelab_reps/" + URI.replace("/", "-");
-  var scriptPath = repoPath + "/pull.sh";
-  var repoShell = fs.createWriteStream(scriptPath);
-  pullShell.pipe(repoShell);
-
-  //when the copy is done, the shell is executed
-  pullShell.on('end', function(){
-    child_process.execFile([scriptPath, repoPath, URI, branch], function(err, out, code) {
-      if (err instanceof Error)
-        throw err;
-      process.stderr.write(err);
-      console.log('ou ' + out);
-      console.log('er ' + err)
-      process.stdout.write(out);
-      process.exit(code);
-    });
+  child_process.execFile("./pull.sh", [repoPath, URI, branch], function(err, out, code) {
+    if (err instanceof Error)
+      throw err;
+    process.stderr.write(err);
+    console.log('ou ' + out);
+    console.log('er ' + err)
+    process.stdout.write(out);
+    process.exit(code);
   });
 
-  return true;
+  // list .m files
+  listMFiles("repoPath", function(list){
+    //sends the list to the client
+  })
 };
 
-exports.listMFiles = function(path) {
-        child_process.execFile([scriptPath, URI, branch], function(err, out, code) {
-      if (err instanceof Error)
-        throw err;
-      process.stderr.write(err);
-      process.stdout.write(out);
-      process.exit(code);
-    });
+
+
+var listMFiles = function(path, callback) {
+  var list = "";
+  var ls = child_process.spawn('cd '+ path + " && ls *.m');
+  ls.stdout.on('data', function(data) {
+    list += data.toString();
+  });
+  ls.on('close', function(code) {
+      return callback(list);
+  });
 }
 
 exports.executeScripts = function(files, path){
