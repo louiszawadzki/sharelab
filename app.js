@@ -2,9 +2,8 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var bodyParser = require('body-parser');
-var mkdirp = require('mkdirp');
 var fs = require('fs');
-var child_process = require('child_process');
+var git = require('./git');
 
 app.use('/static', express.static('public'));
 server.listen(3030);
@@ -15,10 +14,15 @@ app.get('/', function(req,res) {
 });
 
 
-app.post('/pullGitRep', function(req,res) {
-  var gitURI = req.body.gitURI;
-  var gitType = req.body.gitType;
-  pullGitRep(gitURI, gitType, "master", "/path/to/matlab/dir");
+app.get('/pullGitRep', function(req,res) {
+  var gitURI = req.query.gitURI;
+  var gitType = req.query.gitType;
+  git.pullGitRep(gitURI, gitType, "master");
+  var repoPath = "../sharelab_reps/" + gitURI.replace("/", "-");
+  // list .m files
+  git.listMFiles(repoPath, function(list){
+    res.json(list);
+  })
 });
 
 app.post('/executeScripts', function(req,res) {
@@ -35,47 +39,6 @@ app.post('download', function(req,res) {
     res.sendFile(files[f], { root: "/path/to/matlab/dir"});
   };*/
 });
-
-exports.pullGitRep = function(URI, type, branch){
-  console.log("pullGitRep");
-  if (branch == undefined) {
-    var branch = "master";
-  }
-  //create directory for repositories
-  mkdirp("../sharelab_reps", function(err){
-     console.log("unable to create main dir" + ' error :' + err);
-  });
-
-  //execute the shell file
-  var repoPath = "../sharelab_reps/" + URI.replace("/", "-");
-  child_process.execFile("./pull.sh", [repoPath, URI, branch], function(err, out, code) {
-    if (err instanceof Error)
-      throw err;
-    process.stderr.write(err);
-    console.log('ou ' + out);
-    console.log('er ' + err)
-    process.stdout.write(out);
-    process.exit(code);
-  });
-
-  // list .m files
-  listMFiles("repoPath", function(list){
-    //sends the list to the client
-  })
-};
-
-
-
-var listMFiles = function(path, callback) {
-  var list = "";
-  var ls = child_process.spawn('cd '+ path + " && ls *.m');
-  ls.stdout.on('data', function(data) {
-    list += data.toString();
-  });
-  ls.on('close', function(code) {
-      return callback(list);
-  });
-}
 
 exports.executeScripts = function(files, path){
   console.log("executeScripts");
