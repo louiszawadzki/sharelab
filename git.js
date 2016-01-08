@@ -2,7 +2,7 @@ var child_process = require('child_process');
 var mkdirp = require('mkdirp');
 
 
-exports.pullGitRep = function(URI, type, branch){
+exports.pullGitRep = function(URI, type, branch, callback){
   console.log("pullGitRep");
   if (branch == undefined) {
     var branch = "master";
@@ -23,6 +23,7 @@ exports.pullGitRep = function(URI, type, branch){
     console.log('ou ' + out);
     process.stdout.write(out);
     //process.exit(code);
+    callback();
   });
 
   return true;

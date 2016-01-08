@@ -14,7 +14,7 @@ describe("sharelab app", function(){
     });
     it("lists files in directory",function(){
       git.listMFiles(repoPath, function(list) {
-        expect(list).to.equal('index.tex');
+        expect(list).to.contain('index.tex');
       });
     });
   });
@@ -24,7 +24,7 @@ describe("sharelab app", function(){
     var url = "http://localhost:3030/pullGitRep?gitURI=" + gitURI + "&gitType=SSH";
     it("sends list of .m files after pull", function(done){
       request(url, function(error, response, body) {
-        expect(body.replace(/\"/gm,'').replace(/\\n/, '')).to.equal("index.tex");
+        expect(body.replace(/\"/gm,'').replace(/\\n/, '')).to.contain("index.tex");
         done();
       });
     });
